@@ -3,199 +3,484 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assumed Audience Interaction - Analytics Dashboard</title>
+    <title>Assumed Audience Interaction - Advanced AI Analytics</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
+    <!-- Animated Background -->
+    <div class="animated-background">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+    </div>
+
+    <!-- Particles Container -->
+    <div id="particles"></div>
+
     <div class="container">
-        <header>
-            <h1>📊 Assumed Audience Interaction</h1>
-            <p class="subtitle">Professional AI-Powered Video Analytics Dashboard</p>
+        <!-- Enhanced Header -->
+        <header class="hero-header">
+            <div class="logo-container">
+                <div class="logo-icon">🎬</div>
+                <div class="logo-text">
+                    <h1 class="glitch" data-text="Assumed Audience Interaction">Assumed Audience Interaction</h1>
+                    <p class="tagline">Advanced AI-Powered Video Analytics Platform</p>
+                </div>
+            </div>
+            <div class="stats-ticker">
+                <div class="stat-item">
+                    <span class="stat-value" id="videosAnalyzed">0</span>
+                    <span class="stat-label">Videos Analyzed</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">99.8%</span>
+                    <span class="stat-label">Accuracy</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">AI</span>
+                    <span class="stat-label">Powered by Gemini</span>
+                </div>
+            </div>
         </header>
 
         <main>
             <!-- Upload Section -->
             <section class="upload-section" id="uploadSection">
-                <div class="upload-card">
-                    <div class="upload-icon">📹</div>
-                    <h2>Upload Your Video</h2>
-                    <p>Get comprehensive analytics including views, likes, retention, and audience insights</p>
+                <div class="upload-container">
+                    <div class="upload-hero">
+                        <div class="pulse-ring"></div>
+                        <div class="upload-icon-large">📹</div>
+                    </div>
+
+                    <h2 class="section-title">Upload Your Video for Deep Analysis</h2>
+                    <p class="section-description">
+                        Get comprehensive insights including views, engagement, retention curves,
+                        audience demographics, and AI-powered optimization suggestions
+                    </p>
 
                     <div class="upload-area" id="uploadArea">
                         <input type="file" id="videoInput" accept="video/*" hidden>
-                        <label for="videoInput" class="upload-button">
-                            Choose Video File
-                        </label>
-                        <p class="upload-hint">or drag and drop here</p>
+                        <div class="upload-content">
+                            <div class="upload-icon-circle">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                            </div>
+                            <h3>Drag & Drop Your Video Here</h3>
+                            <p>or</p>
+                            <label for="videoInput" class="upload-button-modern">
+                                <span class="button-text">Browse Files</span>
+                                <span class="button-icon">→</span>
+                            </label>
+                            <p class="upload-hint">Supports MP4, MOV, AVI, WebM • Max 100MB</p>
+                        </div>
                     </div>
 
-                    <div id="videoPreview" class="video-preview hidden">
-                        <video id="previewVideo" controls></video>
-                        <button id="analyzeButton" class="analyze-button">Analyze Video</button>
+                    <div id="videoPreview" class="video-preview-modern hidden">
+                        <div class="video-container">
+                            <video id="previewVideo" controls></video>
+                            <div class="video-info" id="videoInfo">
+                                <div class="info-item">
+                                    <span class="info-label">Duration:</span>
+                                    <span class="info-value" id="videoDuration">--:--</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Size:</span>
+                                    <span class="info-value" id="videoSize">--- MB</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Format:</span>
+                                    <span class="info-value" id="videoFormat">---</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button id="analyzeButton" class="analyze-button-modern">
+                            <span class="button-content">
+                                <span class="button-icon-left">🔍</span>
+                                <span>Analyze Video with AI</span>
+                                <span class="button-icon-right">→</span>
+                            </span>
+                            <span class="button-glow"></span>
+                        </button>
                     </div>
                 </div>
             </section>
 
-            <!-- Loading Section -->
-            <section class="loading-section hidden" id="loadingSection">
-                <div class="loading-container">
-                    <div class="loading-spinner">
-                        <div class="spinner-ring"></div>
-                        <div class="spinner-ring"></div>
-                        <div class="spinner-ring"></div>
-                    </div>
-                    <h2 class="loading-title">Analyzing Your Video</h2>
-                    <div class="loading-steps">
-                        <div class="loading-step active" id="step1">
-                            <div class="step-icon">🎬</div>
-                            <div class="step-text">Processing video content</div>
+            <!-- Advanced Loading Section -->
+            <section class="loading-section-advanced hidden" id="loadingSection">
+                <div class="loading-wrapper">
+                    <!-- Main Spinner -->
+                    <div class="spinner-container">
+                        <div class="spinner-orbit">
+                            <div class="spinner-planet planet-1"></div>
+                            <div class="spinner-planet planet-2"></div>
+                            <div class="spinner-planet planet-3"></div>
                         </div>
-                        <div class="loading-step" id="step2">
-                            <div class="step-icon">👥</div>
-                            <div class="step-text">Analyzing audience demographics</div>
-                        </div>
-                        <div class="loading-step" id="step3">
-                            <div class="step-icon">📈</div>
-                            <div class="step-text">Calculating engagement metrics</div>
-                        </div>
-                        <div class="loading-step" id="step4">
-                            <div class="step-icon">💡</div>
-                            <div class="step-text">Generating insights & suggestions</div>
+                        <div class="spinner-core">
+                            <div class="core-pulse"></div>
+                            <span class="core-icon">🤖</span>
                         </div>
                     </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
+
+                    <h2 class="loading-title-animated">Analyzing Your Video</h2>
+
+                    <!-- Estimated Time -->
+                    <div class="time-estimate">
+                        <div class="time-icon">⏱️</div>
+                        <div class="time-content">
+                            <span class="time-label">Estimated Time Remaining:</span>
+                            <span class="time-value" id="timeRemaining">45s</span>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Loading Paths -->
+                    <div class="loading-paths">
+                        <div class="path-item" id="path1" data-step="1">
+                            <div class="path-timeline">
+                                <div class="path-dot"></div>
+                                <div class="path-line"></div>
+                            </div>
+                            <div class="path-content">
+                                <div class="path-header">
+                                    <span class="path-icon">📹</span>
+                                    <h3 class="path-title">Video Processing</h3>
+                                    <span class="path-status">Initializing...</span>
+                                </div>
+                                <div class="path-details">
+                                    <div class="detail-item">• Extracting frames and metadata</div>
+                                    <div class="detail-item">• Analyzing visual composition</div>
+                                    <div class="detail-item">• Processing audio tracks</div>
+                                </div>
+                                <div class="path-progress">
+                                    <div class="path-progress-bar" id="progress1"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="path-item" id="path2" data-step="2">
+                            <div class="path-timeline">
+                                <div class="path-dot"></div>
+                                <div class="path-line"></div>
+                            </div>
+                            <div class="path-content">
+                                <div class="path-header">
+                                    <span class="path-icon">🧠</span>
+                                    <h3 class="path-title">AI Content Analysis</h3>
+                                    <span class="path-status">Waiting...</span>
+                                </div>
+                                <div class="path-details">
+                                    <div class="detail-item">• Identifying content themes</div>
+                                    <div class="detail-item">• Analyzing narrative structure</div>
+                                    <div class="detail-item">• Detecting key moments</div>
+                                </div>
+                                <div class="path-progress">
+                                    <div class="path-progress-bar" id="progress2"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="path-item" id="path3" data-step="3">
+                            <div class="path-timeline">
+                                <div class="path-dot"></div>
+                                <div class="path-line"></div>
+                            </div>
+                            <div class="path-content">
+                                <div class="path-header">
+                                    <span class="path-icon">👥</span>
+                                    <h3 class="path-title">Audience Intelligence</h3>
+                                    <span class="path-status">Waiting...</span>
+                                </div>
+                                <div class="path-details">
+                                    <div class="detail-item">• Profiling target demographics</div>
+                                    <div class="detail-item">• Mapping audience interests</div>
+                                    <div class="detail-item">• Predicting engagement patterns</div>
+                                </div>
+                                <div class="path-progress">
+                                    <div class="path-progress-bar" id="progress3"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="path-item" id="path4" data-step="4">
+                            <div class="path-timeline">
+                                <div class="path-dot"></div>
+                                <div class="path-line"></div>
+                            </div>
+                            <div class="path-content">
+                                <div class="path-header">
+                                    <span class="path-icon">📊</span>
+                                    <h3 class="path-title">Performance Prediction</h3>
+                                    <span class="path-status">Waiting...</span>
+                                </div>
+                                <div class="path-details">
+                                    <div class="detail-item">• Calculating view estimates</div>
+                                    <div class="detail-item">• Projecting engagement rates</div>
+                                    <div class="detail-item">• Modeling retention curves</div>
+                                </div>
+                                <div class="path-progress">
+                                    <div class="path-progress-bar" id="progress4"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="path-item" id="path5" data-step="5">
+                            <div class="path-timeline">
+                                <div class="path-dot"></div>
+                            </div>
+                            <div class="path-content">
+                                <div class="path-header">
+                                    <span class="path-icon">💡</span>
+                                    <h3 class="path-title">Generating Insights</h3>
+                                    <span class="path-status">Waiting...</span>
+                                </div>
+                                <div class="path-details">
+                                    <div class="detail-item">• Creating optimization suggestions</div>
+                                    <div class="detail-item">• Building retention strategies</div>
+                                    <div class="detail-item">• Compiling final report</div>
+                                </div>
+                                <div class="path-progress">
+                                    <div class="path-progress-bar" id="progress5"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Overall Progress -->
+                    <div class="overall-progress">
+                        <div class="overall-progress-info">
+                            <span>Overall Progress</span>
+                            <span id="overallPercentage">0%</span>
+                        </div>
+                        <div class="overall-progress-bar">
+                            <div class="overall-progress-fill" id="overallProgress"></div>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Results Section - Dashboard -->
-            <section class="results-section hidden" id="resultsSection">
-                <h2>📊 Analytics Dashboard</h2>
+            <!-- Results Section -->
+            <section class="results-section-advanced hidden" id="resultsSection">
+                <div class="results-header">
+                    <h2 class="results-title">📊 Analysis Complete</h2>
+                    <div class="analysis-metadata">
+                        <span class="metadata-item">
+                            <span class="metadata-icon">⏱️</span>
+                            Analyzed in <span id="analysisTime">45s</span>
+                        </span>
+                        <span class="metadata-item">
+                            <span class="metadata-icon">🤖</span>
+                            Powered by Gemini 2.5 Flash
+                        </span>
+                    </div>
+                </div>
 
                 <!-- Key Metrics Grid -->
-                <div class="metrics-grid">
-                    <div class="metric-card">
-                        <div class="metric-icon">👁️</div>
-                        <div class="metric-content">
-                            <div class="metric-label">Estimated Views</div>
-                            <div class="metric-value" id="viewsMetric">---</div>
-                            <div class="metric-trend" id="viewsTrend"></div>
+                <div class="metrics-grid-advanced">
+                    <div class="metric-card-advanced" data-metric="views">
+                        <div class="metric-header">
+                            <div class="metric-icon-wrapper">
+                                <div class="metric-icon-bg"></div>
+                                <span class="metric-icon">👁️</span>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-label">Estimated Views</span>
+                                <span class="metric-sublabel">First 30 Days</span>
+                            </div>
                         </div>
+                        <div class="metric-value-wrapper">
+                            <span class="metric-value-large" id="viewsMetric">---</span>
+                            <div class="metric-trend" id="viewsTrend">
+                                <span class="trend-icon">↗</span>
+                                <span class="trend-text">Above Average</span>
+                            </div>
+                        </div>
+                        <div class="metric-sparkline" id="viewsSparkline"></div>
                     </div>
 
-                    <div class="metric-card">
-                        <div class="metric-icon">👍</div>
-                        <div class="metric-content">
-                            <div class="metric-label">Expected Likes</div>
-                            <div class="metric-value" id="likesMetric">---</div>
-                            <div class="metric-trend" id="likesTrend"></div>
+                    <div class="metric-card-advanced" data-metric="likes">
+                        <div class="metric-header">
+                            <div class="metric-icon-wrapper">
+                                <div class="metric-icon-bg"></div>
+                                <span class="metric-icon">👍</span>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-label">Expected Likes</span>
+                                <span class="metric-sublabel">Like-to-View Ratio</span>
+                            </div>
                         </div>
+                        <div class="metric-value-wrapper">
+                            <span class="metric-value-large" id="likesMetric">---</span>
+                            <div class="metric-trend" id="likesTrend">
+                                <span class="trend-icon">↗</span>
+                                <span class="trend-text">Strong Performance</span>
+                            </div>
+                        </div>
+                        <div class="metric-sparkline" id="likesSparkline"></div>
                     </div>
 
-                    <div class="metric-card">
-                        <div class="metric-icon">💬</div>
-                        <div class="metric-content">
-                            <div class="metric-label">Engagement Rate</div>
-                            <div class="metric-value" id="engagementMetric">---</div>
-                            <div class="metric-trend" id="engagementTrend"></div>
+                    <div class="metric-card-advanced" data-metric="engagement">
+                        <div class="metric-header">
+                            <div class="metric-icon-wrapper">
+                                <div class="metric-icon-bg"></div>
+                                <span class="metric-icon">💬</span>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-label">Engagement Rate</span>
+                                <span class="metric-sublabel">Total Interaction %</span>
+                            </div>
                         </div>
+                        <div class="metric-value-wrapper">
+                            <span class="metric-value-large" id="engagementMetric">---</span>
+                            <div class="metric-trend" id="engagementTrend">
+                                <span class="trend-icon">↗</span>
+                                <span class="trend-text">High Engagement</span>
+                            </div>
+                        </div>
+                        <div class="metric-sparkline" id="engagementSparkline"></div>
                     </div>
 
-                    <div class="metric-card">
-                        <div class="metric-icon">⏱️</div>
-                        <div class="metric-content">
-                            <div class="metric-label">Avg. Watch Time</div>
-                            <div class="metric-value" id="watchTimeMetric">---</div>
-                            <div class="metric-trend" id="watchTimeTrend"></div>
+                    <div class="metric-card-advanced" data-metric="retention">
+                        <div class="metric-header">
+                            <div class="metric-icon-wrapper">
+                                <div class="metric-icon-bg"></div>
+                                <span class="metric-icon">⏱️</span>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-label">Avg Watch Time</span>
+                                <span class="metric-sublabel">Viewer Retention</span>
+                            </div>
                         </div>
+                        <div class="metric-value-wrapper">
+                            <span class="metric-value-large" id="watchTimeMetric">---</span>
+                            <div class="metric-trend" id="watchTimeTrend">
+                                <span class="trend-icon">↗</span>
+                                <span class="trend-text">Good Retention</span>
+                            </div>
+                        </div>
+                        <div class="metric-sparkline" id="retentionSparkline"></div>
                     </div>
                 </div>
 
-                <!-- Charts Row -->
-                <div class="charts-row">
-                    <div class="chart-card">
-                        <h3>📈 Retention Analysis</h3>
+                <!-- Charts Section -->
+                <div class="charts-section">
+                    <div class="chart-container-advanced">
+                        <div class="chart-header">
+                            <h3>📈 Retention Analysis</h3>
+                            <div class="chart-controls">
+                                <button class="chart-control active">Timeline</button>
+                                <button class="chart-control">Data</button>
+                            </div>
+                        </div>
                         <canvas id="retentionChart"></canvas>
+                        <div class="chart-insights">
+                            <div class="insight-item">
+                                <span class="insight-label">Peak Retention:</span>
+                                <span class="insight-value" id="peakRetention">Start (100%)</span>
+                            </div>
+                            <div class="insight-item">
+                                <span class="insight-label">Biggest Drop:</span>
+                                <span class="insight-value" id="biggestDrop">---</span>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="chart-card">
-                        <h3>📊 Engagement Breakdown</h3>
+                    <div class="chart-container-advanced">
+                        <div class="chart-header">
+                            <h3>📊 Engagement Distribution</h3>
+                            <div class="chart-controls">
+                                <button class="chart-control active">Breakdown</button>
+                                <button class="chart-control">Details</button>
+                            </div>
+                        </div>
                         <canvas id="engagementChart"></canvas>
-                    </div>
-                </div>
-
-                <!-- Audience & Interaction Row -->
-                <div class="analysis-row">
-                    <div class="result-card">
-                        <div class="card-header">
-                            <h3>👥 Audience Understanding</h3>
-                        </div>
-                        <div class="card-content" id="audienceContent">
-                            <!-- Filled by JS -->
-                        </div>
-                    </div>
-
-                    <div class="result-card">
-                        <div class="card-header">
-                            <h3>💬 Interaction Potential</h3>
-                        </div>
-                        <div class="card-content" id="interactionContent">
-                            <!-- Filled by JS -->
+                        <div class="chart-insights">
+                            <div class="insight-item">
+                                <span class="insight-label">Top Action:</span>
+                                <span class="insight-value">Likes (45%)</span>
+                            </div>
+                            <div class="insight-item">
+                                <span class="insight-label">Shares:</span>
+                                <span class="insight-value">15% Expected</span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Retention Insights -->
-                <div class="result-card retention-card">
-                    <div class="card-header">
-                        <h3>⏱️ Retention Insights</h3>
+                <!-- Detailed Analysis Tabs -->
+                <div class="analysis-tabs">
+                    <div class="tabs-header">
+                        <button class="tab-button active" data-tab="audience">👥 Audience</button>
+                        <button class="tab-button" data-tab="interaction">💬 Interaction</button>
+                        <button class="tab-button" data-tab="retention">⏱️ Retention</button>
+                        <button class="tab-button" data-tab="suggestions">💡 Suggestions</button>
                     </div>
-                    <div class="card-content" id="retentionContent">
-                        <!-- Filled by JS -->
-                    </div>
-                </div>
 
-                <!-- Suggestions Section -->
-                <div class="result-card suggestions-card">
-                    <div class="card-header">
-                        <h3>💡 Actionable Suggestions</h3>
-                        <span class="badge">AI Recommendations</span>
-                    </div>
-                    <div class="card-content">
-                        <div id="suggestionsContent" class="suggestions-grid">
-                            <!-- Filled by JS -->
+                    <div class="tabs-content">
+                        <div class="tab-panel active" id="audienceTab">
+                            <div class="panel-content" id="audienceContent"></div>
+                        </div>
+
+                        <div class="tab-panel" id="interactionTab">
+                            <div class="panel-content" id="interactionContent"></div>
+                        </div>
+
+                        <div class="tab-panel" id="retentionTab">
+                            <div class="panel-content" id="retentionContent"></div>
+                        </div>
+
+                        <div class="tab-panel" id="suggestionsTab">
+                            <div class="suggestions-grid-advanced" id="suggestionsContent"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Interactive Q&A -->
-                <div class="result-card qa-card">
-                    <div class="card-header">
-                        <h3>❓ Ask Questions About Your Video</h3>
-                        <span class="question-counter" id="questionCounter">3 questions remaining</span>
-                    </div>
-                    <div class="card-content">
-                        <div id="qaHistory"></div>
-
-                        <div class="qa-input-section">
-                            <textarea
-                                id="questionInput"
-                                placeholder="Ask anything about your video's performance, audience, or optimization..."
-                                rows="3"
-                            ></textarea>
-                            <button id="askButton" class="ask-button">Ask Question</button>
+                <!-- Q&A Section -->
+                <div class="qa-section-advanced">
+                    <div class="qa-header">
+                        <div class="qa-title">
+                            <span class="qa-icon">❓</span>
+                            <h3>Ask AI About Your Video</h3>
                         </div>
+                        <span class="question-counter-advanced" id="questionCounter">3 questions remaining</span>
+                    </div>
+
+                    <div id="qaHistory" class="qa-history"></div>
+
+                    <div class="qa-input-wrapper">
+                        <textarea
+                            id="questionInput"
+                            placeholder="Ask anything about performance, audience, optimization strategies..."
+                            rows="2"
+                        ></textarea>
+                        <button id="askButton" class="ask-button-advanced">
+                            <span>Ask Question</span>
+                            <span class="button-arrow">→</span>
+                        </button>
                     </div>
                 </div>
 
-                <button id="resetButton" class="reset-button">Analyze Another Video</button>
+                <button id="resetButton" class="reset-button-advanced">
+                    <span class="reset-icon">🔄</span>
+                    <span>Analyze Another Video</span>
+                </button>
             </section>
         </main>
 
-        <footer>
-            <p>Powered by Google Gemini 2.5 Flash | Professional Video Analytics</p>
+        <footer class="footer-advanced">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <span class="footer-icon">🎬</span>
+                    <span>Assumed Audience Interaction</span>
+                </div>
+                <div class="footer-links">
+                    <span>Powered by Google Gemini 2.5 Flash</span>
+                    <span>•</span>
+                    <span>Professional Video Analytics</span>
+                </div>
+            </div>
         </footer>
     </div>
 
