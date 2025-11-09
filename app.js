@@ -14,25 +14,34 @@ const videoInput = document.getElementById('videoInput');
 const uploadArea = document.getElementById('uploadArea');
 const videoPreview = document.getElementById('videoPreview');
 const previewVideo = document.getElementById('previewVideo');
+const videoDuration = document.getElementById('videoDuration');
+const videoSize = document.getElementById('videoSize');
 const analyzeButton = document.getElementById('analyzeButton');
 const uploadSection = document.getElementById('uploadSection');
 const loadingSection = document.getElementById('loadingSection');
 const resultsSection = document.getElementById('resultsSection');
 const audienceContent = document.getElementById('audienceContent');
 const interactionContent = document.getElementById('interactionContent');
-const retentionContent = document.getElementById('retentionContent');
 const suggestionsContent = document.getElementById('suggestionsContent');
 const questionInput = document.getElementById('questionInput');
 const askButton = document.getElementById('askButton');
 const qaHistory = document.getElementById('qaHistory');
 const questionCounter = document.getElementById('questionCounter');
 const resetButton = document.getElementById('resetButton');
+const menuBtn = document.getElementById('menuBtn');
+const sidebar = document.getElementById('sidebar');
+const progressFill = document.getElementById('progressFill');
+const timeRemaining = document.getElementById('timeRemaining');
 
 // Event Listeners
 videoInput.addEventListener('change', handleVideoSelect);
 analyzeButton.addEventListener('click', analyzeVideo);
 askButton.addEventListener('click', askQuestion);
 resetButton.addEventListener('click', resetApp);
+menuBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('open');
+});
+
 questionInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
@@ -60,6 +69,10 @@ uploadArea.addEventListener('drop', (e) => {
     }
 });
 
+uploadArea.addEventListener('click', () => {
+    videoInput.click();
+});
+
 // Handle Video Selection
 function handleVideoSelect(e) {
     const file = e.target.files[0];
@@ -72,24 +85,41 @@ function handleVideoFile(file) {
     currentVideoFile = file;
     const videoUrl = URL.createObjectURL(file);
     previewVideo.src = videoUrl;
+
+    // Update video details
+    const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+    videoSize.textContent = sizeMB + ' MB';
+
+    previewVideo.addEventListener('loadedmetadata', () => {
+        const duration = previewVideo.duration;
+        const minutes = Math.floor(duration / 60);
+        const seconds = Math.floor(duration % 60);
+        videoDuration.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    });
+
     videoPreview.classList.remove('hidden');
 }
 
-// Animate Loading Steps
-function animateLoadingSteps() {
-    const steps = ['step1', 'step2', 'step3', 'step4'];
-    const progressFill = document.getElementById('progressFill');
+// Simple Loading Progress
+function updateLoadingProgress() {
+    let progress = 0;
+    let time = 30;
 
-    steps.forEach((stepId, index) => {
-        setTimeout(() => {
-            // Remove active from all steps
-            steps.forEach(id => document.getElementById(id).classList.remove('active'));
-            // Add active to current step
-            document.getElementById(stepId).classList.add('active');
-            // Update progress bar
-            progressFill.style.width = `${((index + 1) / steps.length) * 100}%`;
-        }, index * 1500);
-    });
+    const interval = setInterval(() => {
+        progress += 2;
+        time -= 0.6;
+
+        if (progress <= 100) {
+            progressFill.style.width = progress + '%';
+            timeRemaining.textContent = Math.max(0, Math.floor(time));
+        }
+
+        if (progress >= 100) {
+            clearInterval(interval);
+        }
+    }, 300);
+
+    return interval;
 }
 
 // Analyze Video with Gemini
@@ -97,7 +127,7 @@ async function analyzeVideo() {
     if (!currentVideoFile) return;
 
     showSection('loading');
-    animateLoadingSteps();
+    const loadingInterval = updateLoadingProgress();
 
     try {
         // Convert video to base64
@@ -117,12 +147,14 @@ async function analyzeVideo() {
    - Demographics (age range, interests, profession)
    - Why this content appeals to them
    - Audience size potential
+   - Content preferences
 
 3. INTERACTION POTENTIAL:
    - Expected engagement types (comments, shares, likes)
    - Discussion topics viewers might bring up
    - Viral potential assessment
    - Community building potential
+   - Emotional response predictions
 
 4. RETENTION ANALYSIS:
    Estimate viewer retention at these timestamps as percentages (0-100%):
@@ -138,7 +170,6 @@ async function analyzeVideo() {
    - A clear title
    - Detailed description
    - Priority level (High/Medium/Low)
-   - Category icon (use emoji: 🎬 for editing, 📝 for content, 🎯 for targeting, 📢 for promotion, 🎨 for thumbnails/visuals)
 
 Format your response clearly with headers and bullet points.`;
 
@@ -147,11 +178,15 @@ Format your response clearly with headers and bullet points.`;
         // Store context for Q&A
         videoAnalysisContext = response;
 
+        // Clear loading interval
+        clearInterval(loadingInterval);
+
         // Parse and display all results
         await displayComprehensiveAnalytics(response);
 
         showSection('results');
     } catch (error) {
+        clearInterval(loadingInterval);
         console.error('Analysis error:', error);
         alert('Error analyzing video: ' + error.message);
         showSection('upload');
@@ -159,13 +194,7 @@ Format your response clearly with headers and bullet points.`;
 }
 
 // Call Gemini API
-async function callGeminiAPI(prompt, base64Video = null, conversationHistory = []) {
-    const contents = [];
-
-    if (conversationHistory.length > 0) {
-        contents.push(...conversationHistory);
-    }
-
+async function callGeminiAPI(prompt, base64Video = null) {
     const parts = [{ text: prompt }];
 
     if (base64Video) {
@@ -177,13 +206,11 @@ async function callGeminiAPI(prompt, base64Video = null, conversationHistory = [
         });
     }
 
-    contents.push({
-        role: 'user',
-        parts: parts
-    });
-
     const requestBody = {
-        contents: contents,
+        contents: [{
+            role: 'user',
+            parts: parts
+        }],
         generationConfig: {
             temperature: 0.7,
             topK: 40,
@@ -223,15 +250,11 @@ async function displayComprehensiveAnalytics(analysisText) {
 
     // Display charts
     displayRetentionChart(retention);
-    displayEngagementChart(metrics);
+    displayEngagementChart();
 
     // Display text sections
     audienceContent.innerHTML = formatAnalysisText(audience);
     interactionContent.innerHTML = formatAnalysisText(interaction);
-
-    // Display retention insights
-    const retentionInsights = extractSection(analysisText, 'RETENTION ANALYSIS');
-    retentionContent.innerHTML = formatAnalysisText(retentionInsights);
 
     // Display suggestions
     displaySuggestions(suggestions);
@@ -278,20 +301,9 @@ function extractMetrics(text) {
 // Display Metrics Cards
 function displayMetrics(metrics) {
     document.getElementById('viewsMetric').textContent = metrics.views;
-    document.getElementById('viewsTrend').innerHTML = '<span class="positive">↗ Above average potential</span>';
-    document.getElementById('viewsTrend').className = 'metric-trend positive';
-
     document.getElementById('likesMetric').textContent = metrics.likes;
-    document.getElementById('likesTrend').innerHTML = '<span class="positive">↗ Strong like ratio</span>';
-    document.getElementById('likesTrend').className = 'metric-trend positive';
-
     document.getElementById('engagementMetric').textContent = metrics.engagement;
-    document.getElementById('engagementTrend').innerHTML = '<span class="positive">↗ High engagement expected</span>';
-    document.getElementById('engagementTrend').className = 'metric-trend positive';
-
     document.getElementById('watchTimeMetric').textContent = metrics.watchTime;
-    document.getElementById('watchTimeTrend').innerHTML = '<span class="positive">↗ Good retention</span>';
-    document.getElementById('watchTimeTrend').className = 'metric-trend positive';
 }
 
 // Extract Retention Data
@@ -328,13 +340,13 @@ function displayRetentionChart(retentionData) {
             datasets: [{
                 label: 'Viewer Retention',
                 data: retentionData,
-                borderColor: '#6366f1',
-                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                borderColor: '#FF0000',
+                backgroundColor: 'rgba(255, 0, 0, 0.1)',
                 tension: 0.4,
                 fill: true,
-                pointRadius: 6,
-                pointHoverRadius: 8,
-                pointBackgroundColor: '#6366f1',
+                pointRadius: 5,
+                pointHoverRadius: 7,
+                pointBackgroundColor: '#FF0000',
                 pointBorderColor: '#fff',
                 pointBorderWidth: 2
             }]
@@ -347,13 +359,11 @@ function displayRetentionChart(retentionData) {
                     display: false
                 },
                 tooltip: {
-                    backgroundColor: 'rgba(30, 41, 59, 0.95)',
+                    backgroundColor: 'rgba(3, 3, 3, 0.9)',
                     padding: 12,
-                    cornerRadius: 8,
-                    titleColor: '#f1f5f9',
-                    bodyColor: '#cbd5e1',
-                    borderColor: '#475569',
-                    borderWidth: 1
+                    cornerRadius: 2,
+                    titleColor: '#fff',
+                    bodyColor: '#fff'
                 }
             },
             scales: {
@@ -364,18 +374,18 @@ function displayRetentionChart(retentionData) {
                         callback: function(value) {
                             return value + '%';
                         },
-                        color: '#cbd5e1'
+                        color: '#606060'
                     },
                     grid: {
-                        color: 'rgba(71, 85, 105, 0.3)'
+                        color: '#E5E5E5'
                     }
                 },
                 x: {
                     ticks: {
-                        color: '#cbd5e1'
+                        color: '#606060'
                     },
                     grid: {
-                        color: 'rgba(71, 85, 105, 0.3)'
+                        color: '#E5E5E5'
                     }
                 }
             }
@@ -384,7 +394,7 @@ function displayRetentionChart(retentionData) {
 }
 
 // Display Engagement Chart
-function displayEngagementChart(metrics) {
+function displayEngagementChart() {
     const ctx = document.getElementById('engagementChart');
 
     if (engagementChart) {
@@ -398,10 +408,10 @@ function displayEngagementChart(metrics) {
             datasets: [{
                 data: [45, 30, 15, 10],
                 backgroundColor: [
-                    '#6366f1',
-                    '#8b5cf6',
-                    '#10b981',
-                    '#f59e0b'
+                    '#FF0000',
+                    '#CC0000',
+                    '#065FD4',
+                    '#606060'
                 ],
                 borderWidth: 0
             }]
@@ -413,21 +423,20 @@ function displayEngagementChart(metrics) {
                 legend: {
                     position: 'bottom',
                     labels: {
-                        color: '#cbd5e1',
+                        color: '#606060',
                         padding: 15,
                         font: {
-                            size: 12
+                            size: 13,
+                            family: 'Roboto'
                         }
                     }
                 },
                 tooltip: {
-                    backgroundColor: 'rgba(30, 41, 59, 0.95)',
+                    backgroundColor: 'rgba(3, 3, 3, 0.9)',
                     padding: 12,
-                    cornerRadius: 8,
-                    titleColor: '#f1f5f9',
-                    bodyColor: '#cbd5e1',
-                    borderColor: '#475569',
-                    borderWidth: 1,
+                    cornerRadius: 2,
+                    titleColor: '#fff',
+                    bodyColor: '#fff',
                     callbacks: {
                         label: function(context) {
                             return context.label + ': ' + context.parsed + '%';
@@ -460,17 +469,11 @@ function extractSuggestions(text) {
 
                 line = line.replace(/^[-*•]\s+/, '').replace(/^\d+\.\s+/, '');
 
-                // Extract icon if present
-                const iconMatch = line.match(/^([🎬📝🎯📢🎨])\s*/);
-                const icon = iconMatch ? iconMatch[1] : '💡';
-                line = line.replace(/^[🎬📝🎯📢🎨]\s*/, '');
-
                 // Extract priority
                 const priority = line.toLowerCase().includes('high') ? 'high' :
                                line.toLowerCase().includes('low') ? 'low' : 'medium';
 
                 currentSuggestion = {
-                    icon: icon,
                     title: line.split(':')[0].trim(),
                     description: line.split(':').slice(1).join(':').trim() || line,
                     priority: priority
@@ -489,31 +492,26 @@ function extractSuggestions(text) {
     if (suggestions.length === 0) {
         suggestions.push(
             {
-                icon: '🎬',
                 title: 'Optimize Video Length',
                 description: 'Based on retention analysis, consider trimming sections where engagement drops to maintain viewer attention.',
                 priority: 'high'
             },
             {
-                icon: '🎯',
                 title: 'Target Audience Refinement',
                 description: 'Focus on the core demographic identified in the analysis for better engagement rates.',
                 priority: 'high'
             },
             {
-                icon: '📝',
                 title: 'Enhance Opening Hook',
                 description: 'Strengthen the first 10 seconds to capture attention and reduce early drop-off.',
                 priority: 'medium'
             },
             {
-                icon: '📢',
                 title: 'Promote at Optimal Times',
                 description: 'Share when your target audience is most active for maximum initial engagement.',
                 priority: 'medium'
             },
             {
-                icon: '🎨',
                 title: 'Improve Thumbnail Design',
                 description: 'Create a more eye-catching thumbnail that clearly communicates the video value.',
                 priority: 'low'
@@ -528,11 +526,8 @@ function extractSuggestions(text) {
 function displaySuggestions(suggestions) {
     suggestionsContent.innerHTML = suggestions.map(suggestion => `
         <div class="suggestion-item">
-            <div class="suggestion-header">
-                <span class="suggestion-icon">${suggestion.icon}</span>
-                <span class="suggestion-title">${escapeHtml(suggestion.title)}</span>
-            </div>
-            <div class="suggestion-description">${escapeHtml(suggestion.description)}</div>
+            <div class="suggestion-title">${escapeHtml(suggestion.title)}</div>
+            <div class="suggestion-desc">${escapeHtml(suggestion.description)}</div>
             <span class="suggestion-priority ${suggestion.priority}">${suggestion.priority.toUpperCase()}</span>
         </div>
     `).join('');
@@ -562,7 +557,7 @@ function formatAnalysisText(text) {
                 inList = true;
             }
             line = line.replace(/^[-*•]\s+/, '').replace(/^\d+\.\s+/, '');
-            formatted += `<li>${line}</li>`;
+            formatted += `<li>${escapeHtml(line)}</li>`;
         } else {
             if (inList) {
                 formatted += '</ul>';
@@ -571,12 +566,12 @@ function formatAnalysisText(text) {
             if (line.includes(':') && line.length < 100) {
                 const parts = line.split(':');
                 if (parts[1]?.trim()) {
-                    formatted += `<p><strong>${parts[0]}:</strong> ${parts[1]}</p>`;
+                    formatted += `<p><strong>${escapeHtml(parts[0])}:</strong> ${escapeHtml(parts[1])}</p>`;
                 } else {
-                    formatted += `<p><strong>${parts[0]}</strong></p>`;
+                    formatted += `<p><strong>${escapeHtml(parts[0])}</strong></p>`;
                 }
             } else {
-                formatted += `<p>${line}</p>`;
+                formatted += `<p>${escapeHtml(line)}</p>`;
             }
         }
     }
@@ -598,22 +593,22 @@ async function askQuestion() {
     questionInput.disabled = true;
 
     try {
-        const qaPair = document.createElement('div');
-        qaPair.className = 'qa-pair';
+        const qaItem = document.createElement('div');
+        qaItem.className = 'qa-item';
 
-        const questionBox = document.createElement('div');
-        questionBox.className = 'question-box';
-        questionBox.innerHTML = `<span class="question-label">Question:</span>${escapeHtml(question)}`;
+        const questionDiv = document.createElement('div');
+        questionDiv.className = 'qa-question';
+        questionDiv.textContent = question;
 
-        qaPair.appendChild(questionBox);
-        qaHistory.appendChild(qaPair);
+        const answerDiv = document.createElement('div');
+        answerDiv.className = 'qa-answer';
+        answerDiv.innerHTML = '<em>Thinking...</em>';
 
-        const answerBox = document.createElement('div');
-        answerBox.className = 'answer-box';
-        answerBox.innerHTML = `<span class="answer-label">Answer:</span><em>Thinking...</em>`;
-        qaPair.appendChild(answerBox);
+        qaItem.appendChild(questionDiv);
+        qaItem.appendChild(answerDiv);
+        qaHistory.appendChild(qaItem);
 
-        qaPair.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        qaItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
         const contextPrompt = `Based on the video analysis we just completed, please answer this question:
 
@@ -623,10 +618,10 @@ Provide a detailed, insightful answer that relates specifically to the video con
 
         const answer = await callGeminiAPI(contextPrompt);
 
-        answerBox.innerHTML = `<span class="answer-label">Answer:</span>${formatAnalysisText(answer)}`;
+        answerDiv.innerHTML = formatAnalysisText(answer);
 
         questionsRemaining--;
-        updateQuestionCounter();
+        questionCounter.textContent = questionsRemaining;
 
         questionInput.value = '';
 
@@ -643,15 +638,6 @@ Provide a detailed, insightful answer that relates specifically to the video con
     }
 }
 
-// Update Question Counter
-function updateQuestionCounter() {
-    questionCounter.textContent = `${questionsRemaining} question${questionsRemaining !== 1 ? 's' : ''} remaining`;
-
-    if (questionsRemaining <= 0) {
-        questionCounter.style.background = '#64748b';
-    }
-}
-
 // Reset App
 function resetApp() {
     currentVideoFile = null;
@@ -661,12 +647,13 @@ function resetApp() {
     videoInput.value = '';
     previewVideo.src = '';
     questionInput.value = '';
-    questionInput.placeholder = 'Ask anything about your video\'s performance, audience, or optimization...';
+    questionInput.placeholder = 'Ask a question about your video...';
     qaHistory.innerHTML = '';
     audienceContent.innerHTML = '';
     interactionContent.innerHTML = '';
-    retentionContent.innerHTML = '';
     suggestionsContent.innerHTML = '';
+    videoDuration.textContent = '--:--';
+    videoSize.textContent = '---';
 
     videoPreview.classList.add('hidden');
     askButton.disabled = false;
@@ -675,7 +662,7 @@ function resetApp() {
     if (retentionChart) retentionChart.destroy();
     if (engagementChart) engagementChart.destroy();
 
-    updateQuestionCounter();
+    questionCounter.textContent = '3';
     showSection('upload');
 }
 
@@ -691,6 +678,8 @@ function showSection(section) {
             break;
         case 'loading':
             loadingSection.classList.remove('hidden');
+            progressFill.style.width = '0%';
+            timeRemaining.textContent = '30';
             break;
         case 'results':
             resultsSection.classList.remove('hidden');
@@ -718,5 +707,5 @@ function escapeHtml(text) {
 }
 
 // Initialize
-console.log('Assumed Audience Interaction - Professional Analytics Dashboard');
+console.log('Assumed Audience Interaction - Video Analytics Dashboard');
 console.log('Powered by Gemini 2.5 Flash');
