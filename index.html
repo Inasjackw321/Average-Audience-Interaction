@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assumed Audience Interaction</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎬 Assumed Audience Interaction</h1>
+            <p class="subtitle">Understand your video's potential audience engagement with AI-powered analysis</p>
+        </header>
+
+        <main>
+            <!-- Upload Section -->
+            <section class="upload-section" id="uploadSection">
+                <div class="upload-card">
+                    <div class="upload-icon">📹</div>
+                    <h2>Upload Your Video</h2>
+                    <p>Upload a video to analyze potential audience interaction and engagement</p>
+
+                    <div class="upload-area" id="uploadArea">
+                        <input type="file" id="videoInput" accept="video/*" hidden>
+                        <label for="videoInput" class="upload-button">
+                            Choose Video File
+                        </label>
+                        <p class="upload-hint">or drag and drop here</p>
+                    </div>
+
+                    <div id="videoPreview" class="video-preview hidden">
+                        <video id="previewVideo" controls></video>
+                        <button id="analyzeButton" class="analyze-button">Analyze Video</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Loading Section -->
+            <section class="loading-section hidden" id="loadingSection">
+                <div class="loader"></div>
+                <p>Analyzing your video with AI...</p>
+                <p class="loading-detail">Understanding audience demographics, engagement patterns, and interaction potential</p>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section hidden" id="resultsSection">
+                <h2>📊 Analysis Results</h2>
+
+                <!-- Audience Understanding -->
+                <div class="result-card">
+                    <div class="card-header">
+                        <h3>👥 Audience Understanding</h3>
+                    </div>
+                    <div class="card-content" id="audienceContent">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+
+                <!-- Interaction Potential -->
+                <div class="result-card">
+                    <div class="card-header">
+                        <h3>💬 Interaction Potential</h3>
+                    </div>
+                    <div class="card-content" id="interactionContent">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+
+                <!-- Interactive Q&A -->
+                <div class="result-card qa-card">
+                    <div class="card-header">
+                        <h3>❓ Ask Questions About Your Video</h3>
+                        <span class="question-counter" id="questionCounter">3 questions remaining</span>
+                    </div>
+                    <div class="card-content">
+                        <div id="qaHistory"></div>
+
+                        <div class="qa-input-section">
+                            <textarea
+                                id="questionInput"
+                                placeholder="Ask anything about your video's audience or engagement potential..."
+                                rows="3"
+                            ></textarea>
+                            <button id="askButton" class="ask-button">Ask Question</button>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="resetButton" class="reset-button">Analyze Another Video</button>
+            </section>
+        </main>
+
+        <footer>
+            <p>Powered by Google Gemini 2.5 Flash</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
