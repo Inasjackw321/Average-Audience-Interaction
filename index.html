@@ -3,163 +3,261 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assumed Audience Interaction - Dashboard</title>
+    <title>Assumed Audience Interaction - AI Video Analytics</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
-    <!-- Top Navigation Bar -->
-    <nav class="top-nav">
-        <div class="nav-left">
-            <button class="menu-btn" id="menuBtn">☰</button>
-            <div class="logo">
-                <span class="logo-icon">📊</span>
-                <span class="logo-text">Video Analytics</span>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="brand">
+                    <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M23 7l-7 5 7 5V7z"/>
+                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                    </svg>
+                    <span class="brand-name">Assumed Audience Interaction</span>
+                </div>
+                <div class="header-badge">
+                    <svg class="badge-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                    </svg>
+                    AI Powered by Gemini
+                </div>
             </div>
         </div>
-        <div class="nav-right">
-            <span class="user-badge">AI Powered</span>
-        </div>
-    </nav>
-
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-item active">
-            <span class="sidebar-icon">📈</span>
-            <span class="sidebar-label">Dashboard</span>
-        </div>
-        <div class="sidebar-item">
-            <span class="sidebar-icon">📹</span>
-            <span class="sidebar-label">Videos</span>
-        </div>
-        <div class="sidebar-item">
-            <span class="sidebar-icon">💬</span>
-            <span class="sidebar-label">Analytics</span>
-        </div>
-    </aside>
+    </header>
 
     <!-- Main Content -->
-    <main class="main-content" id="mainContent">
+    <main class="main">
+        <div class="container">
 
-        <!-- Upload Section -->
-        <section class="section" id="uploadSection">
-            <div class="page-header">
-                <h1>Channel Dashboard</h1>
-                <p>Upload and analyze your video's potential performance</p>
-            </div>
-
-            <div class="upload-box">
-                <input type="file" id="videoInput" accept="video/*" hidden>
-                <div class="upload-content" id="uploadArea">
-                    <div class="upload-icon">📹</div>
-                    <h3>Upload video</h3>
-                    <p>Drag and drop video files to upload</p>
-                    <label for="videoInput" class="upload-btn">Select file</label>
+            <!-- Upload Section -->
+            <section id="uploadSection" class="section">
+                <div class="hero">
+                    <h1 class="hero-title">Understand Your Video's Potential</h1>
+                    <p class="hero-subtitle">Upload your video and get instant AI-powered insights on audience engagement, retention, and growth potential</p>
                 </div>
 
-                <div id="videoPreview" class="video-preview hidden">
-                    <video id="previewVideo" controls></video>
-                    <div class="video-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Duration:</span>
-                            <span id="videoDuration">--:--</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Size:</span>
-                            <span id="videoSize">---</span>
-                        </div>
+                <div class="upload-card">
+                    <div class="upload-area" id="uploadArea">
+                        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                        <h3 class="upload-title">Drop your video here</h3>
+                        <p class="upload-text">or click to browse</p>
+                        <p class="upload-info">Supports MP4, MOV, AVI (Max 100MB)</p>
+                        <input type="file" id="videoInput" accept="video/*" hidden>
                     </div>
-                    <button id="analyzeButton" class="primary-btn">Analyze video</button>
-                </div>
-            </div>
-        </section>
 
-        <!-- Loading Section -->
-        <section class="section hidden" id="loadingSection">
-            <div class="loading-container">
-                <div class="loading-spinner"></div>
-                <h3>Analyzing video...</h3>
-                <p class="loading-text">This may take up to <span id="timeRemaining">30</span> seconds</p>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill"></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Results Section -->
-        <section class="section hidden" id="resultsSection">
-            <div class="page-header">
-                <h1>Video Analytics</h1>
-                <button id="resetButton" class="secondary-btn">New analysis</button>
-            </div>
-
-            <!-- Key Metrics -->
-            <div class="metrics-container">
-                <div class="metric-box">
-                    <div class="metric-label">Estimated Views</div>
-                    <div class="metric-value" id="viewsMetric">---</div>
-                    <div class="metric-change positive">↗ Above average</div>
-                </div>
-                <div class="metric-box">
-                    <div class="metric-label">Like Rate</div>
-                    <div class="metric-value" id="likesMetric">---</div>
-                    <div class="metric-change positive">↗ Good ratio</div>
-                </div>
-                <div class="metric-box">
-                    <div class="metric-label">Engagement</div>
-                    <div class="metric-value" id="engagementMetric">---</div>
-                    <div class="metric-change positive">↗ High engagement</div>
-                </div>
-                <div class="metric-box">
-                    <div class="metric-label">Avg Watch Time</div>
-                    <div class="metric-value" id="watchTimeMetric">---</div>
-                    <div class="metric-change positive">↗ Good retention</div>
-                </div>
-            </div>
-
-            <!-- Charts -->
-            <div class="charts-grid">
-                <div class="chart-box">
-                    <h3>Retention curve</h3>
-                    <canvas id="retentionChart"></canvas>
-                </div>
-                <div class="chart-box">
-                    <h3>Engagement breakdown</h3>
-                    <canvas id="engagementChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Analysis Cards -->
-            <div class="cards-grid">
-                <div class="card">
-                    <h3>👥 Audience</h3>
-                    <div class="card-content" id="audienceContent"></div>
-                </div>
-                <div class="card">
-                    <h3>💬 Engagement</h3>
-                    <div class="card-content" id="interactionContent"></div>
-                </div>
-            </div>
-
-            <!-- Suggestions -->
-            <div class="card full-width">
-                <h3>💡 Recommendations</h3>
-                <div class="suggestions-list" id="suggestionsContent"></div>
-            </div>
-
-            <!-- Q&A -->
-            <div class="card full-width">
-                <h3>❓ Ask about your video</h3>
-                <div class="qa-container">
-                    <div id="qaHistory"></div>
-                    <div class="qa-input">
-                        <textarea id="questionInput" placeholder="Ask a question about your video..." rows="2"></textarea>
-                        <button id="askButton" class="primary-btn">Ask (<span id="questionCounter">3</span> left)</button>
+                    <div id="videoPreview" class="video-preview hidden">
+                        <div class="preview-container">
+                            <video id="previewVideo" controls></video>
+                        </div>
+                        <div class="video-info">
+                            <div class="video-info-item">
+                                <span class="info-label">Duration</span>
+                                <span class="info-value" id="videoDuration">--:--</span>
+                            </div>
+                            <div class="video-info-item">
+                                <span class="info-label">Size</span>
+                                <span class="info-value" id="videoSize">---</span>
+                            </div>
+                            <div class="video-info-item">
+                                <span class="info-label">Format</span>
+                                <span class="info-value" id="videoFormat">---</span>
+                            </div>
+                        </div>
+                        <button id="analyzeButton" class="btn-primary">
+                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                            </svg>
+                            Analyze Video
+                        </button>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
+
+            <!-- Loading Section -->
+            <section id="loadingSection" class="section hidden">
+                <div class="loading-card">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                    </div>
+                    <h2 class="loading-title">Analyzing Your Video</h2>
+                    <p class="loading-text">AI is processing your content to generate detailed insights</p>
+                    <div class="loading-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <span class="progress-text">Estimated time: <span id="timeRemaining">30</span>s</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section id="resultsSection" class="section hidden">
+                <div class="results-header">
+                    <h2 class="results-title">Video Analytics Report</h2>
+                    <button id="resetButton" class="btn-secondary">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+                            <path d="M21 3v5h-5"/>
+                            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+                            <path d="M3 21v-5h5"/>
+                        </svg>
+                        Analyze New Video
+                    </button>
+                </div>
+
+                <!-- Metrics Grid -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">Estimated Views</span>
+                            <svg class="metric-icon views" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </div>
+                        <div class="metric-value" id="viewsMetric">--</div>
+                        <div class="metric-subtitle">First 30 days</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">Like Ratio</span>
+                            <svg class="metric-icon likes" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
+                            </svg>
+                        </div>
+                        <div class="metric-value" id="likesMetric">--</div>
+                        <div class="metric-subtitle">Expected engagement</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">Engagement Rate</span>
+                            <svg class="metric-icon engagement" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                            </svg>
+                        </div>
+                        <div class="metric-value" id="engagementMetric">--</div>
+                        <div class="metric-subtitle">Comments & shares</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">Avg Watch Time</span>
+                            <svg class="metric-icon watchtime" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                        </div>
+                        <div class="metric-value" id="watchTimeMetric">--</div>
+                        <div class="metric-subtitle">Retention estimate</div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3 class="chart-title">Viewer Retention Curve</h3>
+                        <div class="chart-container">
+                            <canvas id="retentionChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <h3 class="chart-title">Engagement Breakdown</h3>
+                        <div class="chart-container">
+                            <canvas id="engagementChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analysis Cards -->
+                <div class="analysis-grid">
+                    <div class="analysis-card">
+                        <div class="analysis-header">
+                            <svg class="analysis-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                            </svg>
+                            <h3 class="analysis-title">Audience Insights</h3>
+                        </div>
+                        <div class="analysis-content" id="audienceContent"></div>
+                    </div>
+
+                    <div class="analysis-card">
+                        <div class="analysis-header">
+                            <svg class="analysis-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                            </svg>
+                            <h3 class="analysis-title">Interaction Potential</h3>
+                        </div>
+                        <div class="analysis-content" id="interactionContent"></div>
+                    </div>
+                </div>
+
+                <!-- Suggestions Section -->
+                <div class="suggestions-section">
+                    <h3 class="suggestions-header">
+                        <svg class="suggestions-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                        Actionable Suggestions
+                    </h3>
+                    <div class="suggestions-grid" id="suggestionsContent"></div>
+                </div>
+
+                <!-- Q&A Section -->
+                <div class="qa-section">
+                    <div class="qa-header">
+                        <h3 class="qa-title">Ask Questions About Your Video</h3>
+                        <div class="qa-counter">
+                            <span id="questionCounter">3</span> questions remaining
+                        </div>
+                    </div>
+                    <div class="qa-input-group">
+                        <input
+                            type="text"
+                            id="questionInput"
+                            class="qa-input"
+                            placeholder="Ask anything about your video's performance, audience, or optimization..."
+                        >
+                        <button id="askButton" class="btn-ask">
+                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <line x1="22" y1="2" x2="11" y2="13"/>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                            </svg>
+                            Ask
+                        </button>
+                    </div>
+                    <div class="qa-history" id="qaHistory"></div>
+                </div>
+            </section>
+
+        </div>
     </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p class="footer-text">Powered by Google Gemini 2.5 Flash AI</p>
+        </div>
+    </footer>
 
     <script src="app.js"></script>
 </body>

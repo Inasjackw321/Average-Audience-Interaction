@@ -16,6 +16,7 @@ const videoPreview = document.getElementById('videoPreview');
 const previewVideo = document.getElementById('previewVideo');
 const videoDuration = document.getElementById('videoDuration');
 const videoSize = document.getElementById('videoSize');
+const videoFormat = document.getElementById('videoFormat');
 const analyzeButton = document.getElementById('analyzeButton');
 const uploadSection = document.getElementById('uploadSection');
 const loadingSection = document.getElementById('loadingSection');
@@ -28,8 +29,6 @@ const askButton = document.getElementById('askButton');
 const qaHistory = document.getElementById('qaHistory');
 const questionCounter = document.getElementById('questionCounter');
 const resetButton = document.getElementById('resetButton');
-const menuBtn = document.getElementById('menuBtn');
-const sidebar = document.getElementById('sidebar');
 const progressFill = document.getElementById('progressFill');
 const timeRemaining = document.getElementById('timeRemaining');
 
@@ -38,9 +37,6 @@ videoInput.addEventListener('change', handleVideoSelect);
 analyzeButton.addEventListener('click', analyzeVideo);
 askButton.addEventListener('click', askQuestion);
 resetButton.addEventListener('click', resetApp);
-menuBtn.addEventListener('click', () => {
-    sidebar.classList.toggle('open');
-});
 
 questionInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -90,6 +86,10 @@ function handleVideoFile(file) {
     const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
     videoSize.textContent = sizeMB + ' MB';
 
+    // Get file extension
+    const extension = file.name.split('.').pop().toUpperCase();
+    videoFormat.textContent = extension;
+
     previewVideo.addEventListener('loadedmetadata', () => {
         const duration = previewVideo.duration;
         const minutes = Math.floor(duration / 60);
@@ -98,6 +98,7 @@ function handleVideoFile(file) {
     });
 
     videoPreview.classList.remove('hidden');
+    uploadArea.style.display = 'none';
 }
 
 // Simple Loading Progress
@@ -340,13 +341,13 @@ function displayRetentionChart(retentionData) {
             datasets: [{
                 label: 'Viewer Retention',
                 data: retentionData,
-                borderColor: '#FF0000',
-                backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                borderColor: '#6366f1',
+                backgroundColor: 'rgba(99, 102, 241, 0.1)',
                 tension: 0.4,
                 fill: true,
-                pointRadius: 5,
-                pointHoverRadius: 7,
-                pointBackgroundColor: '#FF0000',
+                pointRadius: 6,
+                pointHoverRadius: 8,
+                pointBackgroundColor: '#6366f1',
                 pointBorderColor: '#fff',
                 pointBorderWidth: 2
             }]
@@ -359,11 +360,13 @@ function displayRetentionChart(retentionData) {
                     display: false
                 },
                 tooltip: {
-                    backgroundColor: 'rgba(3, 3, 3, 0.9)',
+                    backgroundColor: 'rgba(15, 23, 42, 0.95)',
                     padding: 12,
-                    cornerRadius: 2,
-                    titleColor: '#fff',
-                    bodyColor: '#fff'
+                    cornerRadius: 8,
+                    titleColor: '#f1f5f9',
+                    bodyColor: '#cbd5e1',
+                    borderColor: '#475569',
+                    borderWidth: 1
                 }
             },
             scales: {
@@ -374,18 +377,18 @@ function displayRetentionChart(retentionData) {
                         callback: function(value) {
                             return value + '%';
                         },
-                        color: '#606060'
+                        color: '#94a3b8'
                     },
                     grid: {
-                        color: '#E5E5E5'
+                        color: 'rgba(148, 163, 184, 0.1)'
                     }
                 },
                 x: {
                     ticks: {
-                        color: '#606060'
+                        color: '#94a3b8'
                     },
                     grid: {
-                        color: '#E5E5E5'
+                        color: 'rgba(148, 163, 184, 0.1)'
                     }
                 }
             }
@@ -408,10 +411,10 @@ function displayEngagementChart() {
             datasets: [{
                 data: [45, 30, 15, 10],
                 backgroundColor: [
-                    '#FF0000',
-                    '#CC0000',
-                    '#065FD4',
-                    '#606060'
+                    '#6366f1',
+                    '#8b5cf6',
+                    '#06b6d4',
+                    '#10b981'
                 ],
                 borderWidth: 0
             }]
@@ -423,20 +426,22 @@ function displayEngagementChart() {
                 legend: {
                     position: 'bottom',
                     labels: {
-                        color: '#606060',
+                        color: '#cbd5e1',
                         padding: 15,
                         font: {
                             size: 13,
-                            family: 'Roboto'
+                            family: 'Inter'
                         }
                     }
                 },
                 tooltip: {
-                    backgroundColor: 'rgba(3, 3, 3, 0.9)',
+                    backgroundColor: 'rgba(15, 23, 42, 0.95)',
                     padding: 12,
-                    cornerRadius: 2,
-                    titleColor: '#fff',
-                    bodyColor: '#fff',
+                    cornerRadius: 8,
+                    titleColor: '#f1f5f9',
+                    bodyColor: '#cbd5e1',
+                    borderColor: '#475569',
+                    borderWidth: 1,
                     callbacks: {
                         label: function(context) {
                             return context.label + ': ' + context.parsed + '%';
@@ -647,15 +652,17 @@ function resetApp() {
     videoInput.value = '';
     previewVideo.src = '';
     questionInput.value = '';
-    questionInput.placeholder = 'Ask a question about your video...';
+    questionInput.placeholder = 'Ask anything about your video\'s performance, audience, or optimization...';
     qaHistory.innerHTML = '';
     audienceContent.innerHTML = '';
     interactionContent.innerHTML = '';
     suggestionsContent.innerHTML = '';
     videoDuration.textContent = '--:--';
     videoSize.textContent = '---';
+    videoFormat.textContent = '---';
 
     videoPreview.classList.add('hidden');
+    uploadArea.style.display = '';
     askButton.disabled = false;
     questionInput.disabled = false;
 
@@ -707,5 +714,5 @@ function escapeHtml(text) {
 }
 
 // Initialize
-console.log('Assumed Audience Interaction - Video Analytics Dashboard');
+console.log('Assumed Audience Interaction - AI Video Analytics');
 console.log('Powered by Gemini 2.5 Flash');
