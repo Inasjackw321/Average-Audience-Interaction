@@ -135,44 +135,75 @@ async function analyzeVideo() {
         const base64Video = await fileToBase64(currentVideoFile);
 
         // Enhanced prompt for comprehensive analytics
-        const prompt = `Analyze this video comprehensively and provide detailed analytics in a structured format. Be specific with numbers and percentages.
+        const prompt = `You are an expert YouTube analytics AI. Analyze this video frame-by-frame and provide data-driven predictions. DO NOT GUESS - base everything on what you actually see in the video.
 
-1. PERFORMANCE METRICS:
-   Estimate the following based on the video quality, content type, and market potential:
-   - Estimated views in first 30 days (provide a specific range like "5,000-15,000")
-   - Expected like-to-view ratio percentage
-   - Expected engagement rate percentage
-   - Average watch time percentage
+STEP 1 - HOOK ANALYSIS (First 3-10 seconds):
+Analyze the opening of this video:
+- What happens in the first 3 seconds? Is there immediate value/intrigue?
+- Does it use pattern interrupts, shocking visuals, or compelling questions?
+- Rate the hook quality: Weak/Average/Strong/Excellent
+- Hook retention score (0-100%): What % of viewers will stay past 10 seconds?
 
-2. AUDIENCE UNDERSTANDING:
-   - Demographics (age range, interests, profession)
-   - Why this content appeals to them
-   - Audience size potential
-   - Content preferences
+STEP 2 - CONTENT QUALITY ASSESSMENT:
+Evaluate the actual video content:
+- Production quality: lighting, audio, editing, graphics (1-10 scale)
+- Pacing: Is content delivered quickly or does it drag?
+- Value delivery: How much useful/entertaining content per minute?
+- Visual engagement: Scene changes, b-roll, text overlays, animations
+- Audio quality: Clear voice, background music, sound effects
+- Editing quality: Cuts, transitions, effects
 
-3. INTERACTION POTENTIAL:
-   - Expected engagement types (comments, shares, likes)
-   - Discussion topics viewers might bring up
-   - Viral potential assessment
-   - Community building potential
-   - Emotional response predictions
+STEP 3 - RETENTION FACTORS:
+Based on what you see in the video, predict retention:
+- 0% (start): 100%
+- 10 seconds: [ACTUAL prediction based on hook quality]%
+- 25% through: [Based on content pacing and quality]%
+- 50% through: [Based on value delivery and engagement]%
+- 75% through: [Based on maintaining interest]%
+- 100% (end): [Based on overall content strength]%
 
-4. RETENTION ANALYSIS:
-   Estimate viewer retention at these timestamps as percentages (0-100%):
-   - 0% (start): 100%
-   - 25% through video
-   - 50% through video
-   - 75% through video
-   - 100% (end)
-   Also identify any drop-off points and why viewers might leave.
+Explain specific moments where viewers might leave and why.
 
-5. ACTIONABLE SUGGESTIONS:
-   Provide 5-7 specific, actionable suggestions to improve the video's performance. For each suggestion, include:
-   - A clear title
-   - Detailed description
-   - Priority level (High/Medium/Low)
+STEP 4 - VIEW PREDICTION (DATA-DRIVEN):
+Calculate estimated views using these factors:
+a) Hook Quality Score (0-100): [Your assessment]
+b) Content Quality Score (0-100): [Your assessment]
+c) Niche competitiveness: [Easy/Medium/Hard based on topic]
+d) SEO potential: [Based on topic searchability]
+e) Shareability factor: [Low/Medium/High]
+f) Production value multiplier: [0.5x to 3x based on quality]
 
-Format your response clearly with headers and bullet points.`;
+Formula consideration:
+- Weak hook (<60 score): Max 1K-5K views regardless of content
+- Average hook (60-75): 5K-15K potential if content is strong
+- Strong hook (75-85): 15K-50K potential with good content
+- Excellent hook (85+): 50K-200K+ potential with great content
+
+Provide specific view estimate: [X-Y] views in first 30 days
+Show your calculation: "Hook (X/100) × Content (Y/100) × Niche factor = Z range"
+
+STEP 5 - ENGAGEMENT METRICS:
+Based on content analysis:
+- Like-to-view ratio: [Calculate based on content value and entertainment]
+- Comment rate: [Based on controversy, questions, community building]
+- Share potential: [Based on emotional impact or usefulness]
+- Average watch time: [Based on retention analysis]%
+
+STEP 6 - AUDIENCE UNDERSTANDING:
+Based on content, topic, and style:
+- Specific age range and why
+- Interest categories and professions
+- Why this exact content appeals to them
+- Audience size in this niche
+
+STEP 7 - ACTIONABLE SUGGESTIONS:
+Provide 5-7 specific improvements with:
+- Title (what to fix)
+- Detailed description (exactly how to improve)
+- Priority: High/Medium/Low
+- Expected impact on views
+
+FORMAT ALL SECTIONS WITH CLEAR HEADERS. Be brutally honest - if the hook is weak, say so. If production is poor, explain the impact. Your predictions should be based on ACTUAL analysis of what you see, not generic guesses.`;
 
         const response = await callGeminiAPI(prompt, base64Video);
 
@@ -270,30 +301,63 @@ function extractMetrics(text) {
         watchTime: '65%'
     };
 
-    // Try to extract views
-    const viewsMatch = text.match(/(\d+[,.]?\d*[kKmM]?\s*-\s*\d+[,.]?\d*[kKmM]?)\s*views?/i) ||
-                      text.match(/views?[:\s]+(\d+[,.]?\d*[kKmM]?\s*-\s*\d+[,.]?\d*[kKmM]?)/i);
-    if (viewsMatch) {
-        metrics.views = viewsMatch[1].trim();
+    // Try to extract views with multiple patterns
+    const viewPatterns = [
+        /(\d+[,.]?\d*[kKmM]?\s*-\s*\d+[,.]?\d*[kKmM]?)\s*views?\s*in\s*first\s*30\s*days/i,
+        /specific\s*view\s*estimate[:\s]+(\d+[,.]?\d*[kKmM]?\s*-\s*\d+[,.]?\d*[kKmM]?)/i,
+        /(\d+[,.]?\d*[kKmM]?\s*-\s*\d+[,.]?\d*[kKmM]?)\s*views?/i,
+        /views?[:\s]+(\d+[,.]?\d*[kKmM]?\s*-\s*\d+[,.]?\d*[kKmM]?)/i
+    ];
+
+    for (const pattern of viewPatterns) {
+        const match = text.match(pattern);
+        if (match) {
+            metrics.views = match[1].trim();
+            break;
+        }
     }
 
-    // Try to extract like ratio
-    const likeMatch = text.match(/like[^.]*?(\d+\.?\d*)\s*%/i);
-    if (likeMatch) {
-        metrics.likes = likeMatch[1] + '%';
+    // Extract like-to-view ratio
+    const likePatterns = [
+        /like-to-view\s*ratio[:\s]+(\d+\.?\d*)\s*%/i,
+        /like[^.]*?(\d+\.?\d*)\s*%/i
+    ];
+
+    for (const pattern of likePatterns) {
+        const match = text.match(pattern);
+        if (match) {
+            metrics.likes = match[1] + '%';
+            break;
+        }
     }
 
-    // Try to extract engagement rate
-    const engagementMatch = text.match(/engagement\s*rate[^.]*?(\d+\.?\d*)\s*%/i);
-    if (engagementMatch) {
-        metrics.engagement = engagementMatch[1] + '%';
+    // Extract engagement/comment rate
+    const engagementPatterns = [
+        /comment\s*rate[:\s]+(\d+\.?\d*)\s*%/i,
+        /engagement[^.]*?(\d+\.?\d*)\s*%/i
+    ];
+
+    for (const pattern of engagementPatterns) {
+        const match = text.match(pattern);
+        if (match) {
+            metrics.engagement = match[1] + '%';
+            break;
+        }
     }
 
-    // Try to extract watch time
-    const watchTimeMatch = text.match(/watch\s*time[^.]*?(\d+\.?\d*)\s*%/i) ||
-                          text.match(/retention[^.]*?(\d+\.?\d*)\s*%/i);
-    if (watchTimeMatch) {
-        metrics.watchTime = watchTimeMatch[1] + '%';
+    // Extract average watch time
+    const watchTimePatterns = [
+        /average\s*watch\s*time[:\s]+(\d+\.?\d*)\s*%/i,
+        /watch\s*time[^.]*?(\d+\.?\d*)\s*%/i,
+        /100%.*?(\d+\.?\d*)\s*%/i  // Look for the final retention percentage
+    ];
+
+    for (const pattern of watchTimePatterns) {
+        const match = text.match(pattern);
+        if (match) {
+            metrics.watchTime = match[1] + '%';
+            break;
+        }
     }
 
     return metrics;
@@ -310,16 +374,46 @@ function displayMetrics(metrics) {
 // Extract Retention Data
 function extractRetentionData(text) {
     const defaultRetention = [100, 75, 60, 45, 35];
-    const retention = [];
+    const retention = [100]; // Start is always 100%
 
-    // Try to extract retention percentages
-    const retentionSection = text.match(/RETENTION ANALYSIS:?([\s\S]*?)(?=\d+\.\s+[A-Z]|$)/i);
+    // Try to extract retention percentages from STEP 3
+    const retentionSection = text.match(/STEP 3[\s\S]*?RETENTION FACTORS[\s\S]*?(?=STEP 4|$)/i) ||
+                            text.match(/RETENTION ANALYSIS:?([\s\S]*?)(?=\d+\.\s+[A-Z]|$)/i);
+
     if (retentionSection) {
-        const percentages = retentionSection[1].match(/(\d+)%/g);
-        if (percentages && percentages.length >= 5) {
-            percentages.slice(0, 5).forEach(p => {
-                retention.push(parseInt(p.replace('%', '')));
-            });
+        const sectionText = retentionSection[0];
+
+        // Extract specific percentages at each checkpoint
+        const checkpoints = [
+            /(?:10 seconds|10%)[:\s]+(\d+)%/i,
+            /(?:25%|quarter)[:\s]+(\d+)%/i,
+            /(?:50%|half)[:\s]+(\d+)%/i,
+            /(?:75%|three-quarters)[:\s]+(\d+)%/i,
+            /(?:100%|end)[:\s]+(\d+)%/i
+        ];
+
+        for (const pattern of checkpoints) {
+            const match = sectionText.match(pattern);
+            if (match) {
+                retention.push(parseInt(match[1]));
+            }
+        }
+
+        // If we got all 5 values (including the start), use them
+        if (retention.length === 6) {
+            // Use 10s, 25%, 50%, 75%, 100% (skip the first 100% start)
+            return [retention[0], retention[1], retention[2], retention[3], retention[5]];
+        }
+
+        // Fallback: extract all percentages and try to get 5 values
+        if (retention.length < 5) {
+            const allPercentages = sectionText.match(/(\d+)%/g);
+            if (allPercentages && allPercentages.length >= 5) {
+                retention.length = 0;
+                allPercentages.slice(0, 5).forEach(p => {
+                    retention.push(parseInt(p.replace('%', '')));
+                });
+            }
         }
     }
 
@@ -456,10 +550,13 @@ function displayEngagementChart() {
 // Extract Suggestions
 function extractSuggestions(text) {
     const suggestions = [];
-    const suggestionsSection = text.match(/ACTIONABLE SUGGESTIONS:?([\s\S]*?)(?=\d+\.\s+[A-Z]{4,}|$)/i);
+
+    // Try to find STEP 7 or ACTIONABLE SUGGESTIONS section
+    const suggestionsSection = text.match(/STEP 7[\s\S]*?ACTIONABLE SUGGESTIONS[\s\S]*?(?=FORMAT ALL|$)/i) ||
+                               text.match(/ACTIONABLE SUGGESTIONS:?([\s\S]*?)(?=\d+\.\s+[A-Z]{4,}|$)/i);
 
     if (suggestionsSection) {
-        const lines = suggestionsSection[1].split('\n');
+        const lines = suggestionsSection[0].split('\n');
         let currentSuggestion = null;
 
         for (let line of lines) {
@@ -474,16 +571,33 @@ function extractSuggestions(text) {
 
                 line = line.replace(/^[-*•]\s+/, '').replace(/^\d+\.\s+/, '');
 
-                // Extract priority
-                const priority = line.toLowerCase().includes('high') ? 'high' :
-                               line.toLowerCase().includes('low') ? 'low' : 'medium';
+                // Extract priority (High/Medium/Low)
+                const priorityMatch = line.match(/priority[:\s]+(high|medium|low)/i);
+                const priority = priorityMatch ? priorityMatch[1].toLowerCase() :
+                               (line.toLowerCase().includes('high') ? 'high' :
+                                line.toLowerCase().includes('low') ? 'low' : 'medium');
+
+                // Extract title - look for "Title:" or first part before description
+                let title = '';
+                let description = '';
+
+                if (line.includes('Title:')) {
+                    const parts = line.split(/description[:\s]+/i);
+                    title = parts[0].replace(/title[:\s]+/i, '').replace(/priority[:\s]+\w+/i, '').trim();
+                    description = parts.slice(1).join('').trim();
+                } else {
+                    // Fallback to colon split
+                    const colonParts = line.split(':');
+                    title = colonParts[0].trim();
+                    description = colonParts.slice(1).join(':').trim() || line;
+                }
 
                 currentSuggestion = {
-                    title: line.split(':')[0].trim(),
-                    description: line.split(':').slice(1).join(':').trim() || line,
+                    title: title || 'Improvement Suggestion',
+                    description: description,
                     priority: priority
                 };
-            } else if (currentSuggestion && line) {
+            } else if (currentSuggestion && line && !line.match(/^(title|description|priority|expected impact)/i)) {
                 currentSuggestion.description += ' ' + line;
             }
         }
@@ -540,9 +654,28 @@ function displaySuggestions(suggestions) {
 
 // Extract Section from Analysis
 function extractSection(text, sectionName) {
-    const regex = new RegExp(`${sectionName}:?([\\s\\S]*?)(?=\\d+\\.\\s+[A-Z]|$)`, 'i');
-    const match = text.match(regex);
-    return match ? match[1].trim() : 'Analysis in progress...';
+    // Map old section names to new STEP numbers
+    const sectionMap = {
+        'AUDIENCE UNDERSTANDING': 'STEP 6',
+        'INTERACTION POTENTIAL': 'STEP 5'
+    };
+
+    const stepName = sectionMap[sectionName] || sectionName;
+
+    // Try multiple patterns
+    const patterns = [
+        new RegExp(`${stepName}[\\s\\S]*?:([\\s\\S]*?)(?=STEP \\d+|$)`, 'i'),
+        new RegExp(`${sectionName}:?([\\s\\S]*?)(?=\\d+\\.\\s+[A-Z]|STEP \\d+|$)`, 'i')
+    ];
+
+    for (const regex of patterns) {
+        const match = text.match(regex);
+        if (match && match[1] && match[1].trim().length > 10) {
+            return match[1].trim();
+        }
+    }
+
+    return 'Analysis in progress...';
 }
 
 // Format Analysis Text
